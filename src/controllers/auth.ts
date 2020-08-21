@@ -87,9 +87,15 @@ export default class AuthController {
 
   public static async checkLogin(ctx: Context) {
     const userRepository = getManager().getRepository(User);
-    console.log('/auth.ts [92]--1',ctx.state);
-    const { id } = ctx.state.user
-
+    const { id }:{id:any} = ctx.state.user||{}
+    if(!id) {
+      ctx.response.body = {
+        code: 30001,
+        msg: `Login Loss!`,
+        success: false
+      }
+      return;
+    }
     const user = await userRepository
       .createQueryBuilder()
       .where({ id })
