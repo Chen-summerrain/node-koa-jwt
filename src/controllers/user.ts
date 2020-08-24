@@ -55,11 +55,11 @@ export default class UserController {
 
   public static async updateUser(ctx: Context) {
     const userId = +ctx.params.id;
-
-    if (userId !== +ctx.state.user.id) {
-      ctx.status = 403;
-      throw new ForbiddenException();
-    }
+    console.log('/user.ts [57]--1',userId);
+    // if (userId !== +ctx.state.user.id) {
+    //   ctx.status = 403;
+    //   throw new ForbiddenException();
+    // }
 
     const userRepository = getManager().getRepository(User);
     await userRepository.update(+ctx.params.id, ctx.request.body);
@@ -67,9 +67,17 @@ export default class UserController {
 
     if (updatedUser) {
       ctx.status = 200;
-      ctx.body = updatedUser;
+      ctx.response.body = {
+        code: '0000',
+        msg: `success`,
+        success: true,
+      }
     } else {
-      throw new NotFoundException();
+      ctx.response.body = {
+        code: '300001',
+        msg: `update is loss!`,
+        success:false
+      }
     }
   }
 
@@ -77,13 +85,34 @@ export default class UserController {
     const userId = +ctx.params.id;
 
     if (userId !== +ctx.state.user.id) {
-      ctx.status = 403;
-      throw new ForbiddenException();
+      ctx.status = 200;
+      ctx.response.body = {
+        code: '300001',
+        msg: `No Forbidden!`,
+        success:false
+      }
+      return;
+      // throw new ForbiddenException();
     }
 
     const userRepository = getManager().getRepository(User);
-    await userRepository.delete(+ctx.params.id);
-
-    ctx.status = 204;
+    const res = await userRepository.delete(+ctx.params.id);
+    console.log('/user.ts [93]--1','del',res);
+    console.log('/user.ts [94]--1','user',ctx.state.user.id);
+    if (res) {
+      ctx.status = 200;
+      ctx.response.body = {
+        code: '0000',
+        msg: `delete is success`,
+        success: true,
+      }
+    } else {
+      ctx.status = 200;
+      ctx.response.body = {
+        code: '300001',
+        msg: `delete is loss!`,
+        success:false
+      }
+    }
   }
 }
