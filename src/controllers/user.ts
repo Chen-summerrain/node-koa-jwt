@@ -10,13 +10,26 @@ import { NotFoundException, ForbiddenException } from '../utils/exceptions';
 export default class UserController {
   public static async listUsers(ctx: Context) {
     console.log('/user.ts [26]--1',ctx,ctx.params,ctx.state);
-    const userId = +ctx.params.id;
+    if(!ctx.state.user) {
+      ctx.response.body = {
+        code: 30001,
+        msg: `user not login`,
+        success: false
+      }
+      return;
+    }
 
     const userRepository = getManager().getRepository(User);
     const users = await userRepository.find();
 
     ctx.status = 200;
-    ctx.body = users;
+    ctx.response.body = {
+      code: '0000',
+      msg: `success`,
+      success: true,
+      data:[...users],
+      total:users.length
+    }
   }
 
   public static async showUserDetail(ctx: Context) {
