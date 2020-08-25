@@ -60,7 +60,7 @@ export default class AuthController {
     if (user) {
       ctx.response.body = {
         code: 30001,
-        msg: `user ${name} is already exit!`,
+        msg: `user ${name} is already register!`,
         success: false
       }
     } else {

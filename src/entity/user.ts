@@ -6,10 +6,6 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Index()
-  @Column()
-  userId: number;
-
   @Column()
   name: string;
 

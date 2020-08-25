@@ -82,9 +82,21 @@ export default class UserController {
   }
 
   public static async deleteUser(ctx: Context) {
+    const userRepository = getManager().getRepository(User);
     const userId = +ctx.params.id;
-
-    if (userId !== +ctx.state.user.id) {
+    const token_id = +ctx.state.user.id
+    //check user
+    const b_user = await userRepository.findOne(userId);
+    if(!b_user) {
+      ctx.status = 200;
+      ctx.response.body = {
+        code: '300001',
+        msg: `No User!`,
+        success:false
+      }
+      return;
+    }
+    if (userId === token_id || token_id !==1) {
       ctx.status = 200;
       ctx.response.body = {
         code: '300001',
@@ -95,11 +107,12 @@ export default class UserController {
       // throw new ForbiddenException();
     }
 
-    const userRepository = getManager().getRepository(User);
-    const res = await userRepository.delete(+ctx.params.id);
-    console.log('/user.ts [93]--1','del',res);
-    console.log('/user.ts [94]--1','user',ctx.state.user.id);
-    if (res) {
+    
+    await userRepository.delete({id:userId});
+
+    //check user
+    const f_user = await userRepository.findOne(userId);
+    if (!f_user) {
       ctx.status = 200;
       ctx.response.body = {
         code: '0000',
